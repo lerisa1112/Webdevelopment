@@ -1,0 +1,302 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Cost Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #calculator {
+            max-width: 950px; /* Increased container width */
+            margin: 2em auto;
+            padding: 1em;
+            background: #fff;
+            border-radius: 10%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(0, 0, 0, 0.432);
+            margin-top: 50px;
+            background-color: #eee;
+        }
+        #calculator label {
+            margin-right: 10px;
+            margin-left: 10px;
+            font-weight: 600;
+        }
+        .form-row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .form-group {
+            flex: 1;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .form-group:last-child {
+            margin-right: 0;
+        }
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 25px;
+            height: 33px;
+            margin-right: 10px;
+            background-color: #8FBC8F;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button[type="button"]:hover {
+            background-color: #7FBF7F;
+        }
+        button[type="reset"] {
+            background-color: #FA8072;
+        }
+        #result {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #result p {
+            font-size: 1.2em;
+        }
+        #printButton {
+            padding: 10px 20px;
+            background-color: #87CEFA;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        #chart-container, #gantt-chart-container {
+            width: 100%; /* Set to 100% for full container width */
+            max-width: 600px; /* Set max width for charts */
+            margin: 20px auto; /* Center the charts */
+            height: 250px; /* Set height for the charts */
+        }
+        canvas {
+            max-width: 100% !important; /* Make canvas responsive */
+            height: auto !important; /* Maintain aspect ratio */
+        }
+    </style>
+</head>
+<body>
+
+<h1>Home Cost Calculator</h1>
+<div id="calculator">
+    <form id="calculator-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="state">State:</label>
+                <input type="text" id="state" required placeholder="Enter State">
+            </div>
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" required placeholder="Enter City">
+            </div>
+            <div class="form-group">
+                <label for="area">Area:</label>
+                <input type="number" id="area" required placeholder="Enter Area">
+            </div>
+            <div class="form-group">
+                <label for="unit">Unit:</label>
+                <select id="unit">
+                    <option value="sqm">sq m</option>
+                    <option value="sqft">sq ft</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="button" id="calculate">Calculate</button>
+            </div>
+        </div>
+    </form>
+    <div id="result"></div>
+    <div class="button-container">
+        <button id="print" class="hidden small-button">Print</button>
+        <button id="clear" class="hidden small-button">Clear</button>
+    </div>
+</div>
+<div id="chart-container"></div>
+<div id="gantt-chart-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const priceMapping = {
+        'Gujarat': {
+            'default': 1500,
+            'sqft': 150
+        },
+        'California': {
+            'default': 2500,
+            'sqft': 250
+        },
+        'Texas': {
+            'default': 2000,
+            'sqft': 200
+        },
+        'New York': {
+            'default': 3000,
+            'sqft': 300
+        }
+    };
+
+    const taskNames = [
+        'Home Design & Approval',
+        'Flooring',
+        'Foundation',
+        'RCC Work (Columns & Slabs)',
+        'Brickwork',
+        'Plastering',
+        'Flooring & Tiling',
+        'Electrical Wiring',
+        'Water Supply & Plumbing',
+    ];
+
+    document.getElementById('calculate').addEventListener('click', function() {
+        const state = document.getElementById('state').value;
+        const area = document.getElementById('area').value;
+        const unit = document.getElementById('unit').value;
+
+        let pricePerUnit = priceMapping[state]?.default || 1500;
+        let pricePerSqft = priceMapping[state]?.sqft || 150;
+        let currency = 'INR';
+
+        const totalCost = unit === "sqm" ? area * pricePerUnit : area * pricePerSqft;
+        document.getElementById('result').innerHTML = `Estimated Total Cost: ₹${totalCost.toFixed(2)} ${currency}`;
+
+        const costBreakdown = calculateCostBreakdown(totalCost);
+        
+        const chartData = {
+            labels: taskNames,
+            datasets: [{
+                label: 'Estimated Cost Breakdown',
+                data: costBreakdown,
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                hoverOffset: 4
+            }]
+        };
+
+        const ctx = document.createElement('canvas');
+        document.getElementById('chart-container').innerHTML = '';
+        document.getElementById('chart-container').appendChild(ctx);
+        
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                const label = tooltipItem.label || '';
+                                const value = tooltipItem.raw || 0;
+                                return `${label}: ₹${value.toFixed(2)} ${currency}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const daysData = [10, 5, 7, 8, 6, 12, 10, 15, 5];
+        const ganttData = {
+            labels: taskNames,
+            datasets: [{
+                label: 'Days',
+                data: daysData,
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            }]
+        };
+
+        const ganttCtx = document.createElement('canvas');
+        document.getElementById('gantt-chart-container').innerHTML = '';
+        document.getElementById('gantt-chart-container').appendChild(ganttCtx);
+
+        new Chart(ganttCtx, {
+            type: 'bar',
+            data: ganttData,
+            options: {
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Days'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Tasks'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                const label = tooltipItem.label || '';
+                                const dayValue = tooltipItem.raw || 0;
+                                const costValue = costBreakdown[tooltipItem.dataIndex] || 0;
+                                return `${label}: ${dayValue} days (₹${costValue.toFixed(2)} ${currency})`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        document.getElementById('print').classList.remove('hidden');
+        document.getElementById('clear').classList.remove('hidden');
+    });
+
+    function calculateCostBreakdown(totalCost) {
+        return [
+            totalCost * 0.1,  // Home Design & Approval
+            totalCost * 0.1,  // Flooring
+            totalCost * 0.1,  // Foundation
+            totalCost * 0.15, // RCC Work (Columns & Slabs)
+            totalCost * 0.1,  // Brickwork
+            totalCost * 0.1,  // Plastering
+            totalCost * 0.1,  // Flooring & Tiling
+            totalCost * 0.1,  // Electrical Wiring
+            totalCost * 0.05, // Water Supply & Plumbing
+        ];
+    }
+
+    document.getElementById('print').addEventListener('click', function() {
+        window.print();
+    });
+
+    document.getElementById('clear').addEventListener('click', function() {
+        document.getElementById('calculator-form').reset();
+        document.getElementById('result').innerHTML = '';
+        document.getElementById('chart-container').innerHTML = '';
+        document.getElementById('gantt-chart-container').innerHTML = '';
+        
+        document.getElementById('print').classList.add('hidden');
+        document.getElementById('clear').classList.add('hidden');
+    });
+</script>
+</body>
+</html>
