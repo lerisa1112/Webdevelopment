@@ -1,0 +1,229 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700&display=swap');
+
+:root {
+    --red: #CBC3E3;
+    --black: #000000;
+}
+
+* {
+    font-family: 'Nunito', sans-serif;
+    margin: 0; padding: 0;
+    box-sizing: border-box;
+    outline: none; border: none;
+    text-decoration: none;
+    text-transform: capitalize;
+}
+
+html {
+    font-size: 62.5%;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    scroll-padding-top: 7rem;
+}
+
+body {
+    background: #f7f7f7;
+}
+
+section {
+    padding: 2rem 9%;
+}
+
+.btn {
+    margin-top: 1rem;
+    display: inline-block;
+    padding: .8rem 3.5rem;
+    border-radius: .5rem;
+    font-size: 1.7rem;
+    color: #fff; /* White text color */
+    background: #000; /* Black background */
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+}
+
+.btn:hover {
+    background: #CBC3E3; /* Light purple on hover */
+    color: #000; /* Black text color on hover */
+}
+
+.featured .box-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.featured .box-container .box {
+    border: .1rem solid rgba(0, 0, 0, .2);
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1);
+    border-radius: .5rem;
+    overflow: hidden;
+    background: #fff;
+    flex: 1 1 30rem;
+}
+
+.featured .box-container .box .image-container {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 25rem;
+}
+
+.featured .box-container .box .image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: .2s linear;
+}
+
+.featured .box-container .box:hover .image-container img {
+    transform: scale(1.1);
+}
+
+.featured .box-container .box .content {
+    padding: 1.5rem;
+}
+
+.featured .box-container .box .content .price {
+    display: flex;
+    align-items: center;
+}
+
+.featured .box-container .box .content .price h3 {
+    color: var(--red);
+    font-size: 2rem;
+    margin-right: auto;
+}
+
+.featured .box-container .box .content .location {
+    padding: 1rem 0;
+}
+
+.featured .box-container .box .content .location h3 {
+    font-size: 2.5rem;
+    color: #333;
+}
+
+.featured .box-container .box .content .location p {
+    font-size: 1.5rem;
+    color: #666;
+    line-height: 1.5;
+    padding-top: .5rem;
+}
+
+.featured .box-container .box .content .details {
+    padding: .5rem 0;
+    display: flex;
+}
+
+.featured .box-container .box .content .details h3 {
+    flex: 1;
+    padding: 1rem;
+    border: .1rem solid rgba(0, 0, 0, .1);
+    color: #999;
+    font-size: 1.3rem;
+}
+
+.featured .box-container .box .content .details h3 i {
+    color: #333;
+}
+
+.featured .box-container .box .content .buttons {
+    display: flex;
+    justify-content: center; /* Center buttons horizontally */
+    gap: 1rem;
+    margin-top: 1rem; /* Add some space above buttons */
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fdfdfd; /* Match box background */
+    margin: 10% auto; /* Centered vertically and horizontally */
+    padding: 20px;
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 0 128px 0 rgba(0, 0, 0, 0.1); /* Match box shadow */
+    width: 90%; /* Responsive width */
+    max-width: 450px; /* Max width for larger screens */
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.form-field {
+    margin-bottom: 1rem;
+}
+
+.form-field input {
+    width: 100%;
+    padding: 10px; /* Consistent padding */
+    border: 1px solid #ccc;
+    border-radius: 5px; /* Rounded corners */
+    background-color: #f1f1f1; /* Match input background */
+}
+
+.form-field input:focus {
+    color: #CBC3E3; /* Focus color */
+}
+
+/* Styles for the buttons */
+.b {
+    background-color: black; /* Background color */
+    color: lightpurple; /* Text color */
+    border: none; /* Remove border */
+    padding: 10px 20px; /* Add padding */
+    text-align: center; /* Center text */
+    text-decoration: none; /* Remove underline */
+    display: inline-block; /* Block display */
+    font-size: 16px; /* Font size */
+    cursor: pointer; /* Pointer cursor */
+    transition: background-color 0.3s, color 0.3s; /* Transition effects */
+}
+
+.b:hover {
+    background-color: lightpurple; /* Hover background color */
+    color: white; /* Hover text color */
+}
+
+/* Media queries */
+@media (max-width: 991px) {
+    html {
+        font-size: 55%;
+    }
+
+    section {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 450px) {
+    html {
+        font-size: 50%;
+    }
+
+    .modal-content {
+        width: 95%; /* Slightly adjust for smaller screens */
+    }
+}
